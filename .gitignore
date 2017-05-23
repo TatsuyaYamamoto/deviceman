@@ -1,6 +1,15 @@
+# OS
+.DS_Store
+
+# npm
+node_modules/
+
+# gradle
 .gradle
 /build/
+out/
 !gradle/wrapper/gradle-wrapper.jar
+gradle.properties
 
 ### STS ###
 .apt_generated
