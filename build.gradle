@@ -42,6 +42,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
 	compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
 
+	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+	compile group: 'org.modelmapper', name: 'modelmapper', version: '0.7.8'
+
 	// lombok
 	compileOnly('org.projectlombok:lombok')
 	testCompileOnly('org.projectlombok:lombok')
