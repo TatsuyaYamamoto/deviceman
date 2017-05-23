@@ -21,6 +21,10 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	providedRuntime
+	compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
 
 dependencies {
 	/****************************************
@@ -30,6 +34,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-jdbc')
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-log4j2')
 
 	runtime('org.springframework.boot:spring-boot-devtools')
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
