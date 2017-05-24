@@ -1,9 +1,11 @@
 package jp.co.fujixerox.deviceman.controller;
 
+import jp.co.fujixerox.deviceman.controller.form.ApplyLendingForm;
 import jp.co.fujixerox.deviceman.controller.form.CreateDeviceForm;
 import jp.co.fujixerox.deviceman.controller.resource.DeviceResource;
 import jp.co.fujixerox.deviceman.persistence.entity.DeviceEntity;
 import jp.co.fujixerox.deviceman.service.DeviceService;
+import jp.co.fujixerox.deviceman.service.LendingService;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +30,19 @@ public class DeviceRestController extends BaseRestController {
     private HttpServletRequest request;
     private DeviceService deviceService;
     private ModelMapper modelMapper;
+    private LendingService lendingService;
 
     @Autowired
     public DeviceRestController(
             HttpServletRequest request,
             DeviceService deviceService,
-            ModelMapper modelMapper) {
+            ModelMapper modelMapper,
+            LendingService lendingService) {
+
         this.request = request;
         this.deviceService = deviceService;
         this.modelMapper = modelMapper;
+        this.lendingService = lendingService;
     }
 
     /**
@@ -70,12 +76,24 @@ public class DeviceRestController extends BaseRestController {
     }
 
     /**
-     * 端末を新規登録する
-     *
-     * @param deviceForm
-     * @param bindingResult
-     * @param uriBuilder
-     * @return
+     * @api {post} /api/devices/ Create a device.
+     * @apiName CreateDevice
+     * @apiGroup Device
+     * @apiParam {Number} name              Device name.
+     * @apiParam {String} manufacturer      Name of device manufacturer.
+     * @apiParam {String} os_name OS        name.
+     * @apiParam {String} osVersion         OS version under semantic versioning.
+     * @apiParam {String} imei              IMEI of the device
+     * @apiParam {String} wifi_mac_address  WiFi Mac Address.
+     * @apiParam {String} phoneNumber       phone number
+     * @apiSuccessExample {json} Response:
+     * <pre>
+     *      HTTP/1.1 201 Created
+     * </pre>
+     * @apiErrorExample {json} Response if provided device has been created.
+     * <pre>
+     *      HTTP/1.1 409 Conflict
+     * </pre>
      */
     @RequestMapping(
             value = "/",
@@ -111,5 +129,84 @@ public class DeviceRestController extends BaseRestController {
 
         log.info("END - {} localtion: {}", request.getRequestURI(), location.toString());
         return ResponseEntity.created(location).build();
+    }
+
+    /**
+     * @api {put} /api/devices/:deviceId/lending Lend a device.
+     * @apiName LendDevice
+     * @apiGroup Device
+     * @apiParam {Number} deviceId          Device unique ID.
+     * @apiParam {String} user_id           User unique ID.
+     * @apiParam {Date}   due_return_date   Date that provided user will return the device.
+     * @apiSuccessExample {json} Response:
+     * <pre>
+     *      HTTP/1.1 204 No Content
+     * </pre>
+     * @apiErrorExample {json} Response if provided due return date is invalid.
+     * <pre>
+     *      HTTP/1.1 400 Bad Request
+     * </pre>
+     * @apiErrorExample {json} Response if provided device has been lent.
+     * <pre>
+     *      HTTP/1.1 409 Conflict
+     * </pre>
+     */
+    @RequestMapping(
+            value = "{:deviceId}/lending",
+            method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity applyCheckout(
+            @PathVariable(":deviceId")
+                    Integer deviceId,
+            @RequestBody @Valid
+                    ApplyLendingForm lendingForm,
+            BindingResult bindingResult) {
+
+        log.info("START - {}:{}", request.getMethod(), request.getRequestURI());
+        log.info("INPUT form={}", lendingForm.toString());
+
+        checkBindingResult(bindingResult);
+
+        lendingService.applyLending(
+                deviceId,
+                lendingForm.getUserId(),
+                lendingForm.getDueReturnDate());
+
+        log.info("Success to checkout.");
+
+        /* response */
+        log.info("END - {}", request.getRequestURI());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * @api {delete} /api/devices/:deviceId/lending Return a device.
+     * @apiName ReturnDevice
+     * @apiGroup Device
+     * @apiParam {Number} deviceId  ID of target device.
+     * @apiSuccessExample {json} Response:
+     * <pre>
+     *      HTTP/1.1 204 No Content
+     * </pre>
+     * @apiErrorExample {json} Response if provided device is NOT lent.
+     * <pre>
+     *      HTTP/1.1 404 Not Found
+     * </pre>
+     */
+    @RequestMapping(
+            value = "{:deviceId}/lending",
+            method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity applyReturn(
+            @PathVariable(":deviceId")
+                    Integer deviceId) {
+
+        log.info("START - {}:{}", request.getMethod(), request.getRequestURI());
+
+        lendingService.applyReturn(deviceId);
+        log.info("Success to return device.");
+
+        log.info("END - {}", request.getRequestURI());
+        return ResponseEntity.noContent().build();
     }
 }
