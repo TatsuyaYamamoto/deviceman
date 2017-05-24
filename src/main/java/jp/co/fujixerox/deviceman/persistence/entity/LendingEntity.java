@@ -2,6 +2,7 @@ package jp.co.fujixerox.deviceman.persistence.entity;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -51,6 +52,7 @@ public class LendingEntity implements Serializable {
      */
     @Column(name = "ACTUAL_RETURN_DATE", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
+    @Setter
     private Date actualReturnDate;
 
     protected LendingEntity() {
@@ -60,13 +62,16 @@ public class LendingEntity implements Serializable {
     public LendingEntity(
             @NonNull UserEntity user,
             @NonNull DeviceEntity device,
-            @NonNull Date lendingStartDate,
             @NonNull Date dueReturnDate) {
 
         this.userId = user.getId();
         this.deviceId = device.getId();
-        this.lendingStartDate = lendingStartDate;
         this.dueReturnDate = dueReturnDate;
+    }
+
+    @PrePersist
+    public void onPersist() {
+        lendingStartDate = new Date();
     }
 
     /******************************************************************
