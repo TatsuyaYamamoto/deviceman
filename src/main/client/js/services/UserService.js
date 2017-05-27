@@ -4,6 +4,18 @@ export const SUCCESS = 'success';
 export const ERROR = 'error';
 export const ERROR_CONFLICT = 'error_conflict';
 
+export function search(query) {
+    return axios
+        .get('/api/users/', {
+            params: {
+                query: query
+            }
+        })
+        .then(function (response) {
+            return response.data.users;
+        })
+}
+
 export function createUser(id, address) {
     return axios
         .post('/api/users/', {
