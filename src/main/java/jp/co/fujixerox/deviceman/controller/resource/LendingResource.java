@@ -1,3 +1,4 @@
+
 package jp.co.fujixerox.deviceman.controller.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +15,7 @@ public class LendingResource {
 
     @JsonProperty("user")
     private UserResource user;
-    
+
     @JsonProperty("lending_start_date")
     private Date lendingStartDate;
 
