@@ -29,4 +29,7 @@ public class DeviceResource {
 
     @JsonProperty("updated_at")
     private Date updated;
+
+    @JsonProperty("lending")
+    private LendingResource lending;
 }
