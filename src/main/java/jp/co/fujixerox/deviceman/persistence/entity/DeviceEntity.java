@@ -42,6 +42,7 @@ public class DeviceEntity implements Serializable {
      * OS name of the device.
      */
     @Column(name = "OS_NAME", nullable = false)
+    @Enumerated(EnumType.STRING)
     private OsName osName;
 
     /**
@@ -117,10 +118,8 @@ public class DeviceEntity implements Serializable {
         updated = new Date();
     }
 
-    /******************************************************************
-     * Relation ship
-     */
-    @OneToOne(mappedBy = "device")
-    private LendingEntity checkout;
+    @Transient
+    @Setter
+    private LendingEntity activeLending;
 
 }

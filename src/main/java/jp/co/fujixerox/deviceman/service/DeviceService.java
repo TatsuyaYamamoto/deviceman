@@ -3,6 +3,7 @@ package jp.co.fujixerox.deviceman.service;
 import jp.co.fujixerox.deviceman.persistence.entity.DeviceEntity;
 import jp.co.fujixerox.deviceman.persistence.entity.type.OsName;
 import jp.co.fujixerox.deviceman.persistence.repository.DeviceRepository;
+import jp.co.fujixerox.deviceman.persistence.repository.LendingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +15,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class DeviceService {
     private final DeviceRepository repository;
+    private final LendingRepository lendingRepository;
 
     @Autowired
-    public DeviceService(DeviceRepository repository) {
+    public DeviceService(
+            DeviceRepository repository,
+            LendingRepository lendingRepository) {
         this.repository = repository;
+        this.lendingRepository = lendingRepository;
     }
 
     /**
@@ -27,6 +32,10 @@ public class DeviceService {
      * @return
      */
     public List<DeviceEntity> search(String query) {
+        List<DeviceEntity> devices = repository.search(query);
+        devices.forEach((deviceEntity -> {
+            deviceEntity.setActiveLending(lendingRepository.findActiveLendingByDeviceId(deviceEntity.getId()));
+        }));
         return repository.search(query);
     }
 
