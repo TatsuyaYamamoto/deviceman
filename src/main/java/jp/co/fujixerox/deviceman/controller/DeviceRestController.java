@@ -152,11 +152,11 @@ public class DeviceRestController extends BaseRestController {
      * </pre>
      */
     @RequestMapping(
-            value = "{:deviceId}/lending",
+            value = "{deviceId}/lending",
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity applyCheckout(
-            @PathVariable(":deviceId")
+            @PathVariable("deviceId")
                     Integer deviceId,
             @RequestBody @Valid
                     ApplyLendingForm lendingForm,
@@ -194,11 +194,11 @@ public class DeviceRestController extends BaseRestController {
      * </pre>
      */
     @RequestMapping(
-            value = "{:deviceId}/lending",
+            value = "{deviceId}/lending",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity applyReturn(
-            @PathVariable(":deviceId")
+            @PathVariable("deviceId")
                     Integer deviceId) {
 
         log.info("START - {}:{}", request.getMethod(), request.getRequestURI());
