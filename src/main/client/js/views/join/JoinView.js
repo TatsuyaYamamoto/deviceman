@@ -127,7 +127,7 @@ export default class Join extends React.Component {
             container,
             button
         } = this.getStyles();
-        
+
         const {
             inputValue,
             errorMessage,
@@ -144,9 +144,7 @@ export default class Join extends React.Component {
                     iconElementLeft={<IconButton><ArrowBack /></IconButton>}
                     onLeftIconButtonTouchTap={() => {
                         this.props.history.push("/");
-                    }}
-                    zDepth={0}
-                />
+                    }}/>
 
                 <div style={container}>
                     <h1>{TextResources.Title}</h1>
