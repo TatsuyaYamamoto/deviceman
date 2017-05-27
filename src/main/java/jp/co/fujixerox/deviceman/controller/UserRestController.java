@@ -6,6 +6,7 @@ import jp.co.fujixerox.deviceman.persistence.entity.UserEntity;
 import jp.co.fujixerox.deviceman.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -28,6 +29,7 @@ public class UserRestController extends BaseRestController {
     private HttpServletRequest request;
     private UserService userService;
     private ModelMapper modelMapper;
+    private Type userResourceListType;
 
     @Autowired
     public UserRestController(
@@ -37,6 +39,9 @@ public class UserRestController extends BaseRestController {
         this.request = request;
         this.userService = userService;
         this.modelMapper = modelMapper;
+
+        userResourceListType = new TypeToken<List<UserResource>>() {
+        }.getType();
     }
 
     /**
@@ -55,12 +60,9 @@ public class UserRestController extends BaseRestController {
         log.info("START - {}:{}", request.getMethod(), request.getRequestURI());
         log.info("INPUT query={}", query);
 
-        List<UserEntity> userEntities = userService.search(query);
+        List<UserResource> users = modelMapper.map(userService.search(query), userResourceListType);
 
-        Map<String, List> response = Collections.emptyMap();
-        List<UserResource> users = userEntities.stream()
-                .map((userEntity) -> modelMapper.map(userEntity, UserResource.class))
-                .collect(Collectors.toList());
+        Map<String, List<UserResource>> response = new HashMap<>();
         response.put("users", users);
 
         log.info("END - {}", request.getRequestURI());

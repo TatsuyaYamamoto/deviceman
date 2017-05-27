@@ -8,6 +8,7 @@ import jp.co.fujixerox.deviceman.service.DeviceService;
 import jp.co.fujixerox.deviceman.service.LendingService;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/devices")
@@ -31,6 +32,7 @@ public class DeviceRestController extends BaseRestController {
     private DeviceService deviceService;
     private ModelMapper modelMapper;
     private LendingService lendingService;
+    private Type deviceResourceListType;
 
     @Autowired
     public DeviceRestController(
@@ -43,6 +45,9 @@ public class DeviceRestController extends BaseRestController {
         this.deviceService = deviceService;
         this.modelMapper = modelMapper;
         this.lendingService = lendingService;
+
+        deviceResourceListType = new TypeToken<List<DeviceResource>>() {
+        }.getType();
     }
 
     /**
@@ -61,14 +66,9 @@ public class DeviceRestController extends BaseRestController {
         log.info("START - {}:{}", request.getMethod(), request.getRequestURI());
         log.info("INPUT query={}", query);
 
-        List<DeviceEntity> deviceEntityList = deviceService.search(query);
+        List<DeviceResource> devices = modelMapper.map(deviceService.search(query), deviceResourceListType);
 
-        // entity -> dto mapping.
-        List<DeviceResource> devices = deviceEntityList.stream()
-                .map((deviceEntity) -> modelMapper.map(deviceEntity, DeviceResource.class))
-                .collect(Collectors.toList());
-
-        Map<String, List> response = Collections.emptyMap();
+        Map<String, List<DeviceResource>> response = new HashMap<>();
         response.put("devices", devices);
 
         log.info("END - {}", request.getRequestURI());
