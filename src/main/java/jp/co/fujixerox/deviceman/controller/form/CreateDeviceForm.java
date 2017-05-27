@@ -1,11 +1,13 @@
 package jp.co.fujixerox.deviceman.controller.form;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 
 @Getter
-@Setter
+@AllArgsConstructor
+@ToString
 public class CreateDeviceForm {
     @NotBlank
     private String name;
