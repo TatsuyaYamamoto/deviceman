@@ -5,6 +5,7 @@ import {ThemeComponent} from './Theme'
 import Top from './views/top'
 import Join from './views/join'
 import LendingApplication from './views/application/lending'
+import ReturnApplication from './views/application/return'
 
 export default function () {
     return (
@@ -14,6 +15,7 @@ export default function () {
                     <Route exact path="/" component={Top}/>
                     <Route exact path="/join" component={Join}/>
                     <Route exact path="/application/lending" component={LendingApplication}/>
+                    <Route exact path="/application/return" component={ReturnApplication}/>
                     <Redirect from="*" to="/"/>
                 </Switch>
             </Router>

@@ -19,7 +19,7 @@ import DeviceIcon from 'material-ui/svg-icons/hardware/smartphone';
 import SelectUserDialog from './component/SelectUserDialog'
 import CodeScannerDialog from './component/CodeScannerDialog'
 import {search as searchUser} from '../../../services/UserService'
-import {search as searchDevice} from '../../../services/DeviceService'
+import {search as searchDevice, applyLending} from '../../../services/DeviceService'
 
 const TextResources = {
     button: {
@@ -84,6 +84,28 @@ export default class LendingApplication extends React.Component {
         this.setState({selectedUserIndex: index});
         this.handleOpenSelectUserDialog();
     };
+
+    handleSubmitApplication = () => {
+        const {
+            users,
+            selectedUserIndex,
+            selectedDevice,
+            returnDate
+        } = this.state;
+
+        const deviceId = selectedDevice.id;
+        const userId = users[selectedUserIndex].id;
+
+        this.setState({isFetching: true});
+        applyLending(deviceId, userId, returnDate)
+            .then((result) => {
+            
+            })
+            .then(() => {
+                this.setState({isFetching: false})
+            })
+    };
+
 
     onDetectedCode = (text) => {
         console.info(`detected code. value: ${text}`);
@@ -218,9 +240,9 @@ export default class LendingApplication extends React.Component {
                         <Subheader>Return date</Subheader>
                         <ListItem
                             disabled={true}
-                        style={{
-                            paddingTop: 0
-                        }}>
+                            style={{
+                                paddingTop: 0
+                            }}>
                             <div style={{
                                 display: 'flex'
                             }}>
@@ -245,7 +267,8 @@ export default class LendingApplication extends React.Component {
                     style={applyButton}
                     disabled={!canSubmit}
                     label={TextResources.button.Apply}
-                    primary={true}/>
+                    primary={true}
+                    onTouchTap={this.handleSubmitApplication}/>
 
                 <Checkbox
                     checked={isSaveBorrower}
