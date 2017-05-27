@@ -12,6 +12,9 @@ public class LendingResource {
     @JsonProperty("id")
     private Integer id;
 
+    @JsonProperty("user")
+    private UserResource user;
+    
     @JsonProperty("lending_start_date")
     private Date lendingStartDate;
 
