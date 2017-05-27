@@ -29,7 +29,7 @@ public class UserEntity implements Serializable {
     /**
      * Address of the user.
      */
-    @Column(name = "ADDRESS", nullable = false, unique = true)
+    @Column(name = "ADDRESS", nullable = false)
     @Pattern(regexp = "[a-z0-9\\+\\-_]+(\\.[a-z0-9\\+\\-_]+)*@([a-z0-9\\-]+\\.)+[a-z]{2,6}")
     @Setter
     private String address;
